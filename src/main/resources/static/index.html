@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="sockjs-1.1.1.js"></script>
+    <script src="stomp.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('listContents').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('response').innerHTML = '';
+        }
+
+        var connect_callback = function(frame) {
+            console.log('::: Client ::: Connected. Using STOMP Protocol.');
+                    stompClient.subscribe('/topic/folder/entries', function(folderentry){
+                    showEntry(JSON.parse(folderentry.body).path);
+                });
+        };
+
+        function listContents() {
+            stompClient.send("/app/messenger", {});
+        }
+
+        function showEntry(path) {
+            var response = document.getElementById('response');
+            var p = document.createElement('div');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(path));
+            response.insertBefore(p, response.childNodes[0]);
+        }
+
+        function connect() {
+            var socket = new SockJS('/messenger');
+            stompClient = Stomp.over(socket);
+            setConnected(true);
+            stompClient.connect({}, connect_callback);
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+    </script>
+</head>
+<body onload="disconnect()">
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div>
+    <div>
+        <button id="connect" onclick="connect();">Connect</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+        <button id="listContents" onclick="listContents();">List contents</button>
+    </div>
+    <div id="conversationDiv">
+        <p id="response"></p>
+    </div>
+</div>
+</body>
+</html>
