@@ -61,6 +61,12 @@
             <version>2.10.4</version>
             <type>maven-plugin</type>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
     </dependencies>
 
     <build>
