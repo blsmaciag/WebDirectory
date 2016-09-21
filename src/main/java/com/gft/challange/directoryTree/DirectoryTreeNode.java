@@ -27,7 +27,7 @@ public class DirectoryTreeNode implements TreeNode {
 
     @Override
     public boolean hasChildNodes() {
-        return childNodes.size() != 0 ? true : false;
+        return childNodes.size() > 0 ? true : false;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class TreeNodeIterator implements Iterator<TreeNode> {
         this.rootNode = root;
         //this.lastProcessedNode = root;
         this.treeLevels = new Stack<>();
-        this.treeLevels.push(new TreeLevelState(0, root));
+        this.treeLevels.push(new TreeLevelState(root));
     }
 
     @Override
@@ -21,37 +21,44 @@ public class TreeNodeIterator implements Iterator<TreeNode> {
         return !isRootNodeProcessed();
     }
 
-    private boolean isNodeAvailable(TreeLevelState state) {
-        TreeNode parent = state.getCurrentElement().getParentNode();
-        if(parent != null) {
-            return state.getCurrentPosition() < parent.getChildren().size();
-        } else {
-            return state.getCurrentPosition() < 1;
+    private boolean isNextNodeAvailableOnSameLvl() {
+        //if (treeLevels.size() == 1 && !rootNode.hasChildNodes()) { //when root has no children
+//            return false;
+//        }
+        TreeLevelState state = treeLevels.peek();
+        if (state.hasElementsToProcess()) {
+            TreeNode parent = state.getCurrentlyProcessedElement().getParentNode();
+            if (parent != null) {
+                return state.getCurrentPosition() < parent.getChildren().size();
+            } else {
+                return state.getCurrentPosition() < 1;
+            }
         }
-
+        return false;
     }
 
     @Override
     public TreeNode next() {
-        TreeLevelState levelState = treeLevels.peek();
-        //going down until finding a leaf
-        while (!isRootNodeProcessed()) {
-            while (isNodeAvailable(levelState)) {
-                TreeNode node = levelState.getCurrentElement();
+
+        while (!treeLevels.empty()) {
+            while (isNextNodeAvailableOnSameLvl()) { //mysle ze tu bedzie problem kiedy osiagniemy ostatni element na danym levelu. Nie zostanie przetworzony
+                TreeLevelState levelState = treeLevels.peek();
+                TreeNode node = levelState.getCurrentlyProcessedElement();
                 if (node.hasChildNodes()) {
                     goDown(node);
                 } else {
-                    return markAsProcessedAndReturn(node);
+                    return updateLevelState(node);
                 }
             }
             //going up until unprocessed node (directory) found
-            if(treeLevels.size() > 0){
-                TreeLevelState treeLevelState = goUp();
-                return treeLevelState.getCurrentElement();
+            if (treeLevels.size() > 1) {
+                TreeLevelState higherLevelState = goUp();
+                lastProcessedNode = higherLevelState.getCurrentlyProcessedElement();
             } else {
                 lastProcessedNode = rootNode;
-                return rootNode;
             }
+            updateLevelState(lastProcessedNode);
+            return lastProcessedNode;
 
         }
         return lastProcessedNode;
@@ -61,18 +68,21 @@ public class TreeNodeIterator implements Iterator<TreeNode> {
         return rootNode.equals(lastProcessedNode);
     }
 
-    private TreeNode markAsProcessedAndReturn(TreeNode processedNode) {
+    private TreeNode updateLevelState(TreeNode processedNode) {
         lastProcessedNode = processedNode;
+        TreeLevelState currentLevelState = treeLevels.peek();
+        currentLevelState.setCurrentPosition(currentLevelState.getCurrentPosition() + 1);
         return lastProcessedNode;
     }
 
     private TreeLevelState goDown(TreeNode node) {
-        TreeLevelState levelState = new TreeLevelState(0, node.getChildren().get(0));
+        TreeLevelState levelState = new TreeLevelState(node);
         treeLevels.push(levelState);
         return levelState;
     }
 
     private TreeLevelState goUp() {
-        return treeLevels.pop();
+        treeLevels.pop();
+        return treeLevels.peek();
     }
 }

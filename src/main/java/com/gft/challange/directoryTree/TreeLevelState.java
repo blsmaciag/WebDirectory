@@ -1,23 +1,28 @@
 package com.gft.challange.directoryTree;
 
-/**
- * Created by bzmg on 2016-09-09.
- */
 public class TreeLevelState {
 
-    int currentPosition;
-    TreeNode currentElement;
+    private int currentPosition;
+    private TreeNode parentElement;
 
-    public TreeLevelState(int currentPosition, TreeNode currentElement) {
+    public TreeLevelState(TreeNode parentElement) {
+        this.currentPosition = 0;
+        this.parentElement = parentElement;
+    }
+
+    public void setCurrentPosition(int currentPosition) {
         this.currentPosition = currentPosition;
-        this.currentElement = currentElement;
     }
 
     public int getCurrentPosition() {
         return currentPosition;
     }
 
-    public TreeNode getCurrentElement() {
-        return currentElement;
+    public TreeNode getCurrentlyProcessedElement() {
+        return parentElement.getChildren().get(currentPosition);
+    }
+
+    public boolean hasElementsToProcess() {
+        return parentElement.getChildren().size() > currentPosition;
     }
 }
