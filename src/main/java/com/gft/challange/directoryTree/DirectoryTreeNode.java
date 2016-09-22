@@ -36,11 +36,6 @@ public class DirectoryTreeNode implements TreeNode {
     }
 
     @Override
-    public boolean isRoot() {
-        return parentNode == null;
-    }
-
-    @Override
     public TreeNodeContent getNodeContent() {
         return content;
     }
@@ -60,15 +55,6 @@ public class DirectoryTreeNode implements TreeNode {
      */
     @Override
     public Iterator<TreeNode> iterator() {
-            return new TreeNodeIterator(this);
-    }
-
-    @Override
-    public Iterator<TreeNode> getSibilingsIterator() {
-        if(isRoot()) {
-            return new RootNodeIterator(this);
-        } else {
-            return getParentNode().getChildren().iterator();
-        }
+        return new TreeNodeIterator(this);
     }
 }
