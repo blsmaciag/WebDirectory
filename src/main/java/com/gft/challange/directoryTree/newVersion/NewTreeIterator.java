@@ -24,7 +24,7 @@ public class NewTreeIterator<T> implements Iterator<INewNode<T>> {
     @Override
     public INewNode<T> next() {
         if (stack.empty()) {
-            throw new UnsupportedOperationException("This iterator has no more elemetns");
+            throw new UnsupportedOperationException("This iterator has no ore elemetns");
         }
         INewNode<T> currentNode = null;
         Iterator<INewNode<T>> iterator = stack.peek();
