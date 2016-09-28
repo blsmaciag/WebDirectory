@@ -3,10 +3,10 @@ package com.gft.challange.directoryTree;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class TreeNodeIterator implements Iterator<TreeNode> {
+public class TreeNodeIterator<T> implements Iterator<TreeNode<T>> {
 
-    private TreeNode rootNode;
-    private TreeNode lastProcessedNode;
+    private TreeNode<T> rootNode;
+    private TreeNode<T> lastProcessedNode;
     private Stack<TreeLevel> treeLevels;
 
     public TreeNodeIterator(TreeNode root) {
@@ -34,8 +34,7 @@ public class TreeNodeIterator implements Iterator<TreeNode> {
     }
 
     @Override
-    public TreeNode next() {
-
+    public TreeNode<T> next() {
         while (!treeLevels.empty()) {
             while (isNextNodeAvailableOnSameLvl()) { //mysle ze tu bedzie problem kiedy osiagniemy ostatni element na danym levelu. Nie zostanie przetworzony
                 TreeLevel levelState = treeLevels.peek();
@@ -64,7 +63,7 @@ public class TreeNodeIterator implements Iterator<TreeNode> {
         return rootNode.equals(lastProcessedNode);
     }
 
-    private TreeNode updateLevelState(TreeNode processedNode) {
+    private TreeNode<T> updateLevelState(TreeNode<T> processedNode) {
         lastProcessedNode = processedNode;
         TreeLevel currentLevelState = treeLevels.peek();
         currentLevelState.setCurrentPosition(currentLevelState.getCurrentPosition() + 1);

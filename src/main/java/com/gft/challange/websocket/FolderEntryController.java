@@ -1,6 +1,5 @@
 package com.gft.challange.websocket;
 
-import com.gft.challange.model.FolderEntry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,6 +17,6 @@ public class FolderEntryController {
 
     @MessageMapping("/messenger")
     public void informAboutNewEntry() throws IOException {
-        lister.listCmd();
+        lister.listContents();
     }
 }

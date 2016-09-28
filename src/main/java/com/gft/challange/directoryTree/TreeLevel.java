@@ -1,9 +1,9 @@
 package com.gft.challange.directoryTree;
 
-public class TreeLevel {
+public class TreeLevel<T> {
 
     private int currentPosition;
-    private TreeNode parentElement;
+    private TreeNode<T> parentElement;
 
     public TreeLevel(TreeNode parentElement) {
         this.currentPosition = 0;

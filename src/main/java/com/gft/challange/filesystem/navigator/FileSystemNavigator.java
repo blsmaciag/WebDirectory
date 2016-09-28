@@ -1,11 +1,14 @@
 package com.gft.challange.filesystem.navigator;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
+@Component
 public class FileSystemNavigator implements FileSystemEntryHandler {
 
 
@@ -23,8 +26,10 @@ public class FileSystemNavigator implements FileSystemEntryHandler {
     @Override
     public Iterator<Path> getChildEntries(Path directoryPath) {
         Iterator<Path> iterator = null;
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directoryPath)) { //sprawdzamy czy jest katalogiem
-            iterator = stream.iterator();
+        Stream<Path> directoryEntryStream = null;
+        try {
+            directoryEntryStream = Files.list(directoryPath);
+            iterator = directoryEntryStream.iterator();
         } catch (IOException e) {
             e.printStackTrace();
         }

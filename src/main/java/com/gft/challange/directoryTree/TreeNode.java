@@ -2,13 +2,16 @@ package com.gft.challange.directoryTree;
 
 import java.util.List;
 
-public interface TreeNode extends Iterable<TreeNode>{
+public interface TreeNode<T> extends Iterable<TreeNode> {
 
-    TreeNode getParentNode();
+    TreeNode<T> getParentNode();
     boolean hasChildNodes();
-    List<TreeNode> getChildren();
+
+    List<TreeNode<T>> getChildren();
     void addChildNode(TreeNode node);
-    TreeNodeContent getNodeContent();
-    void setContent(TreeNodeContent content);
+
+    TreeNodePayload<T> getNodeContent();
+
+    void setPayload(TreeNodePayload content);
     void setParentNode(TreeNode treeNode);
 }

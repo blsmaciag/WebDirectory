@@ -1,5 +1,11 @@
 package com.gft.challange.directoryTree;
 
+import com.gft.challange.filesystem.navigator.FileSystemNavigator;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,10 +14,12 @@ import java.util.List;
 public class DirectoryTreeNode implements TreeNode {
 
     private TreeNode parentNode;
-    private List<TreeNode> childNodes = new ArrayList<>();
-    private TreeNodeContent<Path> content;
+    private List<TreeNode> childNodes = null;
+    private TreeNodePayload<Path> payload;
+    private FileSystemNavigator fileSystemNavigator = new FileSystemNavigator(); //todo remove it
 
-    public DirectoryTreeNode() {
+    public DirectoryTreeNode(Path path) {
+        payload = new TreeNodePayload(path);
     }
 
     @Override
@@ -22,27 +30,37 @@ public class DirectoryTreeNode implements TreeNode {
     @Override
     public void addChildNode(TreeNode node) {
         node.setParentNode(this);
+        if (childNodes == null) {
+            childNodes = new ArrayList<>();
+        }
         childNodes.add(node);
     }
 
     @Override
     public boolean hasChildNodes() {
-        return childNodes.size() > 0 ? true : false;
+        if (fileSystemNavigator.isDirectory(payload.getContents()) &&
+                fileSystemNavigator.hasChildEntries(payload.getContents())) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     public List<TreeNode> getChildren() {
-        return childNodes;
+        if (childNodes == null) {
+            return getDirectoryEntries(payload.getContents());
+        } else {
+            return childNodes;
+        }
     }
 
     @Override
-    public TreeNodeContent getNodeContent() {
-        return content;
+    public TreeNodePayload<Path> getNodeContent() {
+        return payload;
     }
 
-    @Override
-    public void setContent(TreeNodeContent content) {
-        this.content = content;
+    public void setPayload(TreeNodePayload payload) {
+        this.payload = payload;
     }
 
     @Override
@@ -56,5 +74,22 @@ public class DirectoryTreeNode implements TreeNode {
     @Override
     public Iterator<TreeNode> iterator() {
         return new TreeNodeIterator(this);
+    }
+
+    private List<TreeNode> getDirectoryEntries(Path path) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+            Iterator<Path> iterator = directoryStream.iterator();
+            while (iterator.hasNext()) {
+                this.addChildNode(new DirectoryTreeNode(iterator.next()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return childNodes;
+    }
+
+    @Autowired
+    public void setFileSystemNavigator(FileSystemNavigator fileSystemNavigator) {
+        this.fileSystemNavigator = fileSystemNavigator;
     }
 }
