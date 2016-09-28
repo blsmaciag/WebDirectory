@@ -19,10 +19,10 @@ public class NewTreeIteratorTest {
         NewNode<String> node12 = new NewNode<String>("12", node121, node122);
         NewNode<String> node1 = new NewNode<String>("1", node11, node12);
 
-        Iterator<NewNode<String>> iterator = new NewTreeIterator<>(node1);
+        Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
 
 
-        NewNode<String> node = iterator.next();
+        INewNode<String> node = iterator.next();
         assertEquals("11", node.getContent());
         node = iterator.next();
         assertEquals("111", node.getContent());
@@ -52,9 +52,9 @@ public class NewTreeIteratorTest {
         NewNode<String> node12 = new NewNode<String>("12", node121, node122);
         NewNode<String> node1 = new NewNode<String>("1", node11, node12);
 
-        Iterator<NewNode<String>> iterator = new NewTreeIterator<>(node1);
+        Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
 
-        NewNode<String> node = iterator.next();
+        INewNode<String> node = iterator.next();
         //assertEquals("11", node.getContent());
         System.out.println(node.getContent());
         node = iterator.next();
