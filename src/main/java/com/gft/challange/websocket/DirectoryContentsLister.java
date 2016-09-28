@@ -1,19 +1,21 @@
 package com.gft.challange.websocket;
 
+import com.gft.challange.directoryTree.newVersion.FileNode;
+import com.gft.challange.directoryTree.newVersion.INewNode;
+import com.gft.challange.directoryTree.newVersion.NewTree;
 import com.gft.challange.model.FolderEntry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Component
 public class DirectoryContentsLister {
@@ -23,30 +25,15 @@ public class DirectoryContentsLister {
     @Value("${directory}")
     private String directory;
 
-    @Autowired
+
     private SimpMessagingTemplate messagingTemplate;
 
-    public void list() throws IOException {
-        Path path = FileSystems.getDefault().getPath(directory);
-        Files.walk(path).map(p -> new FolderEntry(p.toString(), null)).forEach(o -> {
-            System.out.println(o.getPath());
-            messagingTemplate.convertAndSend(ResourceUri.BROKER_TOPIC_FOLDER_ENTRIES.getUri(), o);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void listCmd() throws IOException {
-        StringBuffer output = new StringBuffer();
-        Process p = Runtime.getRuntime().exec("dir /s "+ directory);
-        BufferedReader reader =  new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line = "";
-        while ((line = reader.readLine())!= null) {
-            messagingTemplate.convertAndSend(ResourceUri.BROKER_TOPIC_FOLDER_ENTRIES.getUri(), new FolderEntry(line, null));
-        }
+    public void listContents() throws IOException {
+        NewTree<Path> directoryTree = new NewTree(new FileNode(Paths.get(directory)));
+        Iterator<INewNode<Path>> directoryIterator = directoryTree.iterator();
+        Stream.generate(() -> directoryIterator.hasNext() ? directoryIterator.next() : null).filter(Objects::nonNull)
+                .limit(100).forEach(treeNode -> messagingTemplate.convertAndSend(ResourceUri.BROKER_TOPIC_FOLDER_ENTRIES.getUri(),
+                new FolderEntry()));
     }
 
     public String getDirectory() {
@@ -57,6 +44,7 @@ public class DirectoryContentsLister {
         this.directory = directory;
     }
 
+    @Autowired
     public void setMessagingTemplate(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
