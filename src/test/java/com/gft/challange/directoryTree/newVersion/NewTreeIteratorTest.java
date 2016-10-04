@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewTreeIteratorTest {
 
     @Test
-    public void testNext() throws Exception {
+    public void testNext_symetricTree() throws Exception {
         NewNode<String> node121 = new NewNode<String>("121");
         NewNode<String> node122 = new NewNode<String>("122");
         NewNode<String> node111 = new NewNode<String>("111");
@@ -21,26 +21,25 @@ public class NewTreeIteratorTest {
 
         Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
 
-
         INewNode<String> node = iterator.next();
-        assertEquals("11", node.getContent());
+        assertThat(node.getContent()).isEqualTo("11");
         node = iterator.next();
-        assertEquals("111", node.getContent());
+        assertThat(node.getContent()).isEqualTo("111");
         node = iterator.next();
-        assertEquals("112", node.getContent());
+        assertThat(node.getContent()).isEqualTo("112");
         node = iterator.next();
-        assertEquals("12", node.getContent());
+        assertThat(node.getContent()).isEqualTo("12");
         node = iterator.next();
-        assertEquals("121", node.getContent());
+        assertThat(node.getContent()).isEqualTo("121");
         node = iterator.next();
-        assertEquals("122", node.getContent());
+        assertThat(node.getContent()).isEqualTo("122");
         node = iterator.next();
-        assertEquals("1", node.getContent());
+        assertThat(node.getContent()).isEqualTo("1");
     }
 
 
     @Test
-    public void testNext2() throws Exception {
+    public void testNext_notSymetricTree() throws Exception {
         NewNode<String> node111 = new NewNode<String>("111");
         NewNode<String> node112 = new NewNode<String>("112");
         NewNode<String> node121 = new NewNode<String>("121");
@@ -55,31 +54,41 @@ public class NewTreeIteratorTest {
         Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
 
         INewNode<String> node = iterator.next();
-        //assertEquals("11", node.getContent());
-        System.out.println(node.getContent());
+        assertThat(node.getContent()).isEqualTo("11");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("111", node.getContent());
+        assertThat(node.getContent()).isEqualTo("111");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("112", node.getContent());
+        assertThat(node.getContent()).isEqualTo("112");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("12", node.getContent());
+        assertThat(node.getContent()).isEqualTo("12");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("121", node.getContent());
+        assertThat(node.getContent()).isEqualTo("121");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("122", node.getContent());
+        assertThat(node.getContent()).isEqualTo("122");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("1221", node.getContent());
+        assertThat(node.getContent()).isEqualTo("1221");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("1222", node.getContent());
+        assertThat(node.getContent()).isEqualTo("1222");
         node = iterator.next();
-        System.out.println(node.getContent());
-        assertEquals("1", node.getContent());
+        assertThat(node.getContent()).isEqualTo("1");
+    }
+
+    @Test
+    public void testHasNext_onlyRoot() throws Exception {
+        NewNode<String> node1 = new NewNode<String>("1");
+        Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
+        assertThat(iterator.hasNext()).isTrue();
+        iterator.next();
+        assertThat(iterator.hasNext()).isFalse();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testNext_noMoreElements() throws Exception {
+        NewNode<String> node1 = new NewNode<String>("1");
+        Iterator<INewNode<String>> iterator = new NewTreeIterator<>(node1);
+        assertThat(iterator.hasNext()).isTrue();
+        iterator.next();
+        assertThat(iterator.hasNext()).isFalse();
+        iterator.next();
     }
 }
