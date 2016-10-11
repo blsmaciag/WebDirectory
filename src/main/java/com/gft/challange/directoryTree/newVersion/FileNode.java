@@ -1,23 +1,33 @@
 package com.gft.challange.directoryTree.newVersion;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Created by bzmg on 2016-09-28.
- */
 public class FileNode implements INewNode<Path> {
 
+    private Path path;
+
     public FileNode(Path path) {
+        this.path = path;
     }
 
     @Override
     public Path getContent() {
-        return null;
+        return path;
     }
 
     @Override
     public Iterator<INewNode<Path>> iterator() {
-        return null;
+        ArrayList<INewNode<Path>> result = new ArrayList<>();
+
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+            directoryStream.forEach(p -> result.add(new FileNode(p)));
+        } catch (IOException ex) {
+        }
+        return result.iterator();
     }
 }

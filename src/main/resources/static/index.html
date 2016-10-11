@@ -19,7 +19,7 @@
         var connect_callback = function(frame) {
             console.log('::: Client ::: Connected. Using STOMP Protocol.');
                     stompClient.subscribe('/topic/folder/entries', function(folderentry){
-                    showEntry(JSON.parse(folderentry.body).path);
+                    showEntry(JSON.parse(folderentry.body).content);
                 });
         };
 

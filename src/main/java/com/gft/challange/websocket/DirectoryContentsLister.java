@@ -3,7 +3,6 @@ package com.gft.challange.websocket;
 import com.gft.challange.directoryTree.newVersion.FileNode;
 import com.gft.challange.directoryTree.newVersion.INewNode;
 import com.gft.challange.directoryTree.newVersion.NewTree;
-import com.gft.challange.model.FolderEntry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,7 @@ public class DirectoryContentsLister {
         Iterator<INewNode<Path>> directoryIterator = directoryTree.iterator();
         Stream.generate(() -> directoryIterator.hasNext() ? directoryIterator.next() : null).filter(Objects::nonNull)
                 .limit(100).forEach(treeNode -> messagingTemplate.convertAndSend(ResourceUri.BROKER_TOPIC_FOLDER_ENTRIES.getUri(),
-                new FolderEntry()));
+                treeNode));
     }
 
     public String getDirectory() {
